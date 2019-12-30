@@ -9,6 +9,9 @@ import Hello from './views/Hello'
 import Home from './views/Home'
 import UsersIndex from './views/UsersIndex'
 import UsersIndexBeforeLoad from './views/UsersIndexBeforeLoad'
+import UsersEdit from './views/UsersEdit';
+import NotFound from './views/NotFound';
+import UsersCreate from './views/UsersCreate';
 
 const router = new VueRouter({
   mode: 'history',
@@ -33,6 +36,18 @@ const router = new VueRouter({
         name: 'users.index_all',
         component: UsersIndex,
     },
+    {
+        path: '/users/:id/edit',
+        name: 'users.edit',
+        component: UsersEdit,
+    },
+    {
+        path: '/users/create',
+        name: 'users.create',
+        component: UsersCreate,
+    },
+    { path: '/404', name: '404', component: NotFound, },
+    { path: '*', redirect: '/404' },
   ],
 });
 
