@@ -15,7 +15,10 @@ class UsersController extends Controller
     }
     public function index()
     {
-        return UserResource::collection(User::paginate(10));
+//        return UserResource::collection(User::paginate(10));
+        $data = User::paginate(10);
+//        return $data;
+        return response()->json($data);
     }
     public function store(Request $request)
     {

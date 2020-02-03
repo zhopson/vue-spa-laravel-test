@@ -26,7 +26,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+//import axios from 'axios';
+//import api from "../api/users";
 export default {
   data() {
     return {
@@ -42,8 +43,11 @@ export default {
     fetchData() {
       this.error = this.users = null;
       this.loading = true;
-      axios
-        .get('/api/users_all')
+
+        this.$http({
+          url: `auth/users_all`,
+          method: 'GET'
+        })
         .then(response => {
         //   this.users = response.data; for use without DB
         this.users = response.data.data;
@@ -53,6 +57,18 @@ export default {
             this.loading = false;
             this.error = error.response.data.message || error.message;
         });
+
+
+//       api.all()
+//         .then(response => {
+//         //   this.users = response.data; for use without DB
+//         this.users = response.data.data;
+//           this.loading = false;
+// //          console.log(response);
+//         }).catch(error => {
+//             this.loading = false;
+//             this.error = error.response.data.message || error.message;
+//         });
     }
   }
 }
