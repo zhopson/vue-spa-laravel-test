@@ -26,7 +26,7 @@ Route::prefix('auth')->group(function () {
         Route::namespace('Api')->group(function () {// server/api/
             Route::get('/users', 'UsersController@index')->middleware('isAdmin');
             Route::get('/users_all', 'UsersController@index_all')->middleware('isAdmin');
-            Route::post('/users', 'UsersController@store')->middleware('isAdminOrSelf');
+            Route::post('/users', 'UsersController@store')->middleware('isAdmin');
             Route::get('/users/{user}', 'UsersController@show')->middleware('isAdminOrSelf');
             Route::put('/users/{user}', 'UsersController@update')->middleware('isAdminOrSelf');
             Route::delete('/users/{user}', 'UsersController@destroy')->middleware('isAdminOrSelf');

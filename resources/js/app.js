@@ -75,7 +75,8 @@ const router = new VueRouter({
       name: 'users.index',
       component: UsersIndexBeforeLoad,
       meta: {
-        auth: true
+        //auth: true
+        auth: {roles: 1, redirect: {name: 'login'}, forbiddenRedirect: '/403'}
       }
     },
     {
@@ -83,7 +84,8 @@ const router = new VueRouter({
         name: 'users.index_all',
         component: UsersIndex,
         meta: {
-            auth: true
+            //auth: true
+            auth: {roles: 1, redirect: {name: 'login'}, forbiddenRedirect: '/403'}
           }
     },
     {

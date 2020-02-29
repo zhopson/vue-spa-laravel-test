@@ -37,7 +37,7 @@ $darkRed: darken($red, 50%);
   </div>
 </template>
 <script>
-import api from "../api/users";
+//import api from "../api/users";
 
 export default {
   data() {
@@ -56,11 +56,19 @@ export default {
     onSubmit(event) {
       this.saving = true;
 
-      api
-        .update(this.user.id, {
-          name: this.user.name,
-          email: this.user.email
-        })
+    //   api
+    //     .update(this.user.id, {
+    //       name: this.user.name,
+    //       email: this.user.email
+    //     })
+      this.$http({
+        url: 'auth/users/'+ this.user.id,
+        method: 'PUT',
+        params:{
+           name: this.user.name,
+           email: this.user.email
+         }
+      })
         .then(response => {
           this.message = "User updated";
           setTimeout(() => (this.message = null), 2000);
@@ -79,7 +87,12 @@ export default {
     onDelete() {
       this.saving = true;
 
-      api.delete(this.user.id).then(response => {
+    //   api.delete(this.user.id)
+      this.$http({
+        url: 'auth/users/'+ this.user.id,
+        method: 'DELETE',
+      })
+      .then(response => {
         //console.log(response);
         this.message = 'User Deleted';
         setTimeout(() => this.$router.push({ name: 'users.index' }), 2000);
@@ -87,13 +100,19 @@ export default {
     },
   },
   created() {
-    api.find(this.$route.params.id).then(response => {
+      let vm = this;
+    // api.find(this.$route.params.id)
+      this.$http({
+        url: 'auth/users/'+ vm.$route.params.id,
+        method: 'GET'
+      })
+      .then(response => {
       setTimeout(() => {
-        this.loaded = true;
-        this.user = response.data.data;
+        vm.loaded = true;
+        vm.user = response.data.data;
       }, 3000);
     }).catch((err) => {
-       this.$router.push({ name: '404' });
+       vm.$router.push({ name: '404' });
      });
   }
 };

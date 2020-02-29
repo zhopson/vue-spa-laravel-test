@@ -1,3 +1,5 @@
+//this file is used without auth, => now, with auth, this file is not used
+
 import axios from 'axios';
 // import VueAxios from 'vue-axios'
 // import Vue from 'vue'
@@ -10,7 +12,7 @@ import axios from 'axios';
 // Vue.use(VueAuth, auth)
 
 const client = axios.create({
-  baseURL: '/api/auth',
+  baseURL: 'auth',
 });
 
 export default {

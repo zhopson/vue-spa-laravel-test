@@ -24,7 +24,7 @@
     </div>
 </template>
 <script>
-    import api from '../api/users';
+    //import api from '../api/users';
 
     export default {
         data() {
@@ -42,7 +42,12 @@
             onSubmit($event) {
                 this.saving = true
                 this.message = false
-                api.create(this.user)
+                //api.create(this.user)
+                    this.$http({
+                        url: 'auth/users',
+                        method: 'POST',
+                        params: this.user
+                    })
                     .then((response) => {
                         this.$router.push({ name: 'users.edit', params: { id: response.data.data.id } });
                     })

@@ -3051,7 +3051,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _api_users__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/users */ "./resources/js/api/users.js");
 //
 //
 //
@@ -3077,7 +3076,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
+//import api from '../api/users';
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3095,8 +3094,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.saving = true;
-      this.message = false;
-      _api_users__WEBPACK_IMPORTED_MODULE_0__["default"].create(this.user).then(function (response) {
+      this.message = false; //api.create(this.user)
+
+      this.$http({
+        url: 'auth/users',
+        method: 'POST',
+        params: this.user
+      }).then(function (response) {
         _this.$router.push({
           name: 'users.edit',
           params: {
@@ -3123,7 +3127,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _api_users__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/users */ "./resources/js/api/users.js");
 //
 //
 //
@@ -3162,7 +3165,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
+//import api from "../api/users";
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3180,10 +3183,19 @@ __webpack_require__.r(__webpack_exports__);
     onSubmit: function onSubmit(event) {
       var _this = this;
 
-      this.saving = true;
-      _api_users__WEBPACK_IMPORTED_MODULE_0__["default"].update(this.user.id, {
-        name: this.user.name,
-        email: this.user.email
+      this.saving = true; //   api
+      //     .update(this.user.id, {
+      //       name: this.user.name,
+      //       email: this.user.email
+      //     })
+
+      this.$http({
+        url: 'auth/users/' + this.user.id,
+        method: 'PUT',
+        params: {
+          name: this.user.name,
+          email: this.user.email
+        }
       }).then(function (response) {
         _this.message = "User updated";
         setTimeout(function () {
@@ -3209,8 +3221,12 @@ __webpack_require__.r(__webpack_exports__);
     onDelete: function onDelete() {
       var _this2 = this;
 
-      this.saving = true;
-      _api_users__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"](this.user.id).then(function (response) {
+      this.saving = true; //   api.delete(this.user.id)
+
+      this.$http({
+        url: 'auth/users/' + this.user.id,
+        method: 'DELETE'
+      }).then(function (response) {
         //console.log(response);
         _this2.message = 'User Deleted';
         setTimeout(function () {
@@ -3222,15 +3238,18 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
-    var _this3 = this;
+    var vm = this; // api.find(this.$route.params.id)
 
-    _api_users__WEBPACK_IMPORTED_MODULE_0__["default"].find(this.$route.params.id).then(function (response) {
+    this.$http({
+      url: 'auth/users/' + vm.$route.params.id,
+      method: 'GET'
+    }).then(function (response) {
       setTimeout(function () {
-        _this3.loaded = true;
-        _this3.user = response.data.data;
+        vm.loaded = true;
+        vm.user = response.data.data;
       }, 3000);
     })["catch"](function (err) {
-      _this3.$router.push({
+      vm.$router.push({
         name: '404'
       });
     });
@@ -3353,32 +3372,68 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//import pagination from 'laravel-vue-pagination';
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      users: {},
-      error: null
+      users: null,
+      meta: null,
+      error: null,
+      pagination: {}
     };
   },
-  computed: {},
+  computed: {
+    paginatonCount: function paginatonCount() {
+      if (!this.meta) {
+        return;
+      }
+
+      var _this$meta = this.meta,
+          current_page = _this$meta.current_page,
+          last_page = _this$meta.last_page;
+      return "".concat(current_page, " of ").concat(last_page);
+    },
+    totalCount: function totalCount() {
+      if (!this.meta) {
+        return;
+      }
+
+      var total_records = this.meta.total;
+      return "Total records: ".concat(total_records);
+    }
+  },
   created: function created() {
     this.getUsers();
   },
   methods: {
-    getUsers: function getUsers(page) {
+    getUsers: function getUsers(page_url) {
       var _this = this;
 
-      if (typeof page === 'undefined') {
-        page = 1;
-      } //  api.all_pag()
+      var vm = this;
+      page_url = page_url || 'auth/users'; //  api.all_pag()
 
-
-      this.$http.get('auth/users?page=' + page).then(function (response) {
-        return response.data.data;
-      }).then(function (data) {
-        _this.users = data;
+      this.$http({
+        url: page_url,
+        method: 'GET'
+      }).then(function (response) {
+        _this.users = response.data.data;
+        vm.makePagination(response.data.meta, response.data.links);
+      })["catch"](function (error) {
+        console.log(error);
+        _this.error = error;
       });
+    },
+    makePagination: function makePagination(meta, links) {
+      var pagination = {
+        current_page: meta.current_page,
+        last_page: meta.last_page,
+        next_page_url: links.next,
+        prev_page_url: links.prev
+      };
+      this.pagination = pagination;
     }
   }
 });
@@ -42036,17 +42091,44 @@ var render = function() {
         )
       : _vm._e(),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "pagination" },
-      [
-        _c("pagination", {
-          attrs: { data: _vm.users.data },
-          on: { "pagination-change-page": _vm.getUsers }
-        })
-      ],
-      1
-    ),
+    _c("div", { staticClass: "pagination" }, [
+      _c(
+        "button",
+        {
+          attrs: { disabled: !_vm.pagination.prev_page_url },
+          on: {
+            click: function($event) {
+              $event.preventDefault()
+              return _vm.getUsers(_vm.pagination.prev_page_url)
+            }
+          }
+        },
+        [_vm._v("Previous")]
+      ),
+      _vm._v(
+        "\n    Page " +
+          _vm._s(_vm.pagination.current_page) +
+          " of " +
+          _vm._s(_vm.pagination.last_page) +
+          "\n    "
+      ),
+      _c(
+        "button",
+        {
+          attrs: { disabled: !_vm.pagination.next_page_url },
+          on: {
+            click: function($event) {
+              $event.preventDefault()
+              return _vm.getUsers(_vm.pagination.next_page_url)
+            }
+          }
+        },
+        [_vm._v("Next")]
+      ),
+      _vm._v(" "),
+      _c("br"),
+      _vm._v("\n    " + _vm._s(_vm.totalCount) + "\n  ")
+    ]),
     _vm._v(" "),
     _c(
       "div",
@@ -57426,52 +57508,6 @@ module.exports = function(module) {
 
 /***/ }),
 
-/***/ "./resources/js/api/users.js":
-/*!***********************************!*\
-  !*** ./resources/js/api/users.js ***!
-  \***********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
- // import VueAxios from 'vue-axios'
-// import Vue from 'vue'
-// import VueAuth from '@websanova/vue-auth'
-// import auth from '../auth'
-// // Set Vue authentication
-// Vue.use(VueAxios, axios)
-// //axios.defaults.baseURL = `${process.env.MIX_APP_URL}/api`
-// Vue.use(VueAuth, auth)
-
-var client = axios__WEBPACK_IMPORTED_MODULE_0___default.a.create({
-  baseURL: '/api/auth'
-});
-/* harmony default export */ __webpack_exports__["default"] = ({
-  all: function all(params) {
-    return client.get('users_all', params);
-  },
-  all_pag: function all_pag(params) {
-    return client.get('users', params);
-  },
-  find: function find(id) {
-    return client.get("users/".concat(id));
-  },
-  create: function create(data) {
-    return client.post('users', data);
-  },
-  update: function update(id, data) {
-    return client.put("users/".concat(id), data);
-  },
-  "delete": function _delete(id) {
-    return client["delete"]("users/".concat(id));
-  }
-});
-
-/***/ }),
-
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -57576,14 +57612,28 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_5__["default"]({
     name: 'users.index',
     component: _views_UsersIndexBeforeLoad__WEBPACK_IMPORTED_MODULE_12__["default"],
     meta: {
-      auth: true
+      //auth: true
+      auth: {
+        roles: 1,
+        redirect: {
+          name: 'login'
+        },
+        forbiddenRedirect: '/403'
+      }
     }
   }, {
     path: '/users_all',
     name: 'users.index_all',
     component: _views_UsersIndex__WEBPACK_IMPORTED_MODULE_11__["default"],
     meta: {
-      auth: true
+      //auth: true
+      auth: {
+        roles: 1,
+        redirect: {
+          name: 'login'
+        },
+        forbiddenRedirect: '/403'
+      }
     }
   }, {
     path: '/users/:id/edit',
