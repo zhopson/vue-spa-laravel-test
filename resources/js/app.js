@@ -121,6 +121,7 @@ axios.defaults.baseURL = `${process.env.MIX_APP_URL}/api`
 Vue.use(VueAuth, auth)
 //Vue.use(require('vue-resource'));
 
+Vue.component('navbar', require('./components/Navbar.vue').default);
 Vue.component('pagination', require('laravel-vue-pagination'));
 //Vue.router=router;
 // Load Index

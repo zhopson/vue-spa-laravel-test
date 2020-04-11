@@ -46,6 +46,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if (($exception instanceof TokenExpiredException)) {
+            return response()->json(['error' => 'Token has expired and can no longer be refreshed'], Response::HTTP_UNAUTHORIZED);
+        }
         return parent::render($request, $exception);
     }
 }
